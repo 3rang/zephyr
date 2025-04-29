@@ -11,13 +11,16 @@
 	model = "u-blox evk_iris_w1 rw612";
 	compatible = "u-blox,ubx_evk_iris_w1_rw612";
 	aliases {
-		led0 = &green_led;
 		watchdog0 = &wwdt;
 		usart-0 = &flexcomm3;
 		i2c-0 = &flexcomm2;
 		pwm-0 = &sctimer;
-		sw0 = &user_button_0;
 		ambient-temp0 = &p3t1755;
+		iris-red = &rgb_red;
+		iris-green = &rgb_green;
+		iris-blue = &rgb_blue;
+		iris-buttons0 = &user_button_0;
+		iris-buttons1 = &user_button_1;
 	};
 
 	chosen {
@@ -30,31 +33,38 @@
 		zephyr,uart-mcumgr = &flexcomm3;
 	};
 
-	leds {
+	// IRIS-W1 RGB 
+	rgb_leds {
 		compatible = "gpio-leds";
-		green_led: led_1 {
-			gpios = <&hsgpio0 12 GPIO_ACTIVE_LOW>;
+		rgb_blue: led_1 {
+			gpios = < &hsgpio1 0xa GPIO_ACTIVE_LOW>;
+			label = "IRIS RGB_BLUE";
+		};
+		rgb_green: led_2 {
+			gpios = < &hsgpio1 0xb GPIO_ACTIVE_LOW >;
+			label = "IRIS RGB_GREEN";
+		};
+		rgb_red: led_3 {
+			gpios = < &hsgpio1 0xc GPIO_ACTIVE_LOW >;
+			label = "IRIS RGB_RED";
 		};
 	};
 
-	gpio_keys {
+	sw {
 		compatible = "gpio-keys";
-		user_button_0: button_0 {
-			label = "User SW2";
-			gpios = <&hsgpio0 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-			zephyr,code = <INPUT_KEY_0>;
-			status = "okay";
+		user_button_0: sw_1 {
+			label = "IRIS SWITCH_1";  // GPIO45  
+			gpios = < &hsgpio1 0xd GPIO_ACTIVE_LOW >;
+			zephyr,code = < 0x2 >;
+		};
+
+		user_button_1: sw_2 {
+			label = "IRIS SWITCH_2";  // GPIO51
+			gpios = < &hsgpio1 0x13 GPIO_ACTIVE_LOW >;
+			zephyr,code = < 0x3 >;
 		};
 	};
 
-	nxp_lcd_pmod_connector: lcd-pmod-connector {
-		compatible = "nxp,lcd-pmod";
-		#gpio-cells = <2>;
-		gpio-map-mask = <0xffffffff 0xfffffff0>;
-		gpio-map-pass-thru = <0 0xf>;
-		gpio-map = <10  0 &hsgpio1 12 0>,  /* Pin 10, LCD and touch reset */
-			   <12  0 &hsgpio0 18 0>;  /* Pin 11, LCD touch INT */
-	};
 };
 
 &flexcomm3 {
@@ -241,16 +251,16 @@ zephyr_udc0: &usb_otg {
  */
 &flexcomm1 {
 	compatible = "nxp,lpc-spi";
-	pinctrl-0 = <&pinmux_flexcomm1_spi>;
+	pinctrl-0 = <&pinmux_flexcomm0_spi>;
 	pinctrl-names = "default";
-	status = "okay";
+	status = "disabled";
 	#address-cells = <1>;
 	#size-cells = <0>;
 };
 
 arduino_i2c: &flexcomm2 {
 	compatible = "nxp,lpc-i2c";
-	status = "okay";
+	status = "disabled";
 	clock-frequency = <I2C_BITRATE_FAST>;
 	#address-cells = <1>;
 	#size-cells = <0>;
@@ -264,12 +274,4 @@ arduino_i2c: &flexcomm2 {
 	};
 };
 
-zephyr_mipi_dbi_spi: &lcdic {
-	status = "okay";
-	pinctrl-0 = <&pinmux_lcdic>;
-	pinctrl-names = "default";
-};
 
-nxp_pmod_touch_panel_i2c: &arduino_i2c {
-	status = "okay";
-};
