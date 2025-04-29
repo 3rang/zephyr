@@ -53,7 +53,7 @@ Boards
 * The DT binding :dtcompatible:`zephyr,native-posix-cpu` has been deprecated in favor of
   :dtcompatible:`zephyr,native-sim-cpu`.
 
-* Zephyr now supports version 1.11.2 of the :zephyr:board:`neorv32`. NEORV32 processor (SoC)
+* Zephyr now supports version 1.11.3 of the :zephyr:board:`neorv32`. NEORV32 processor (SoC)
   implementations need to be updated to this version to be compatible with Zephyr v4.2.0.
 
 * The :zephyr:board:`neorv32` now targets NEORV32 processor (SoC) templates via board variants. The
@@ -78,6 +78,13 @@ Boards
 
 Device Drivers and Devicetree
 *****************************
+
+Devicetree
+==========
+
+* Many of the vendor-specific and arch-specific files that were in dts/common have been moved
+  to more specific locations. Therefore, any dts files which ``#include <common/some_file.dtsi>``
+  a file from in the zephyr tree will need to be changed to just ``#include <some_file.dtsi>``.
 
 DAI
 ===
@@ -264,6 +271,14 @@ Bluetooth Audio
 
 * ``CONFIG_BT_CSIP_SET_MEMBER_NOTIFIABLE`` has been renamed to
   :kconfig:option:`CONFIG_BT_CSIP_SET_MEMBER_SIRK_NOTIFIABLE``. (:github:`86763``)
+
+Bluetooth HCI
+=============
+
+* The buffer types passing through the HCI driver interface are now indicated as H:4 encoded prefix
+  bytes as part of the buffer payload itself. The bt_buf_set_type() and bt_buf_get_type() functions
+  have been deprecated, but are still usable, with the exception that they can only be
+  called once per buffer.
 
 Bluetooth Host
 ==============
