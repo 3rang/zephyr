@@ -5,7 +5,6 @@
 #
 
 zephyr_library()
-
 if(CONFIG_NXP_RW6XX_BOOT_HEADER)
   zephyr_compile_definitions(BOARD_FLASH_SIZE=${CONFIG_FLASH_SIZE}*1024)
 
@@ -21,4 +20,10 @@ if(CONFIG_NXP_RW6XX_BOOT_HEADER)
     message(FATAL_ERROR "No supported flash type,"
      "Define either CONFIG_FLASH_MACRONIX or CONFIG_FLASH_FIDELIX.")
   endif()
+
+if (CONFIG_DT_HAS_NXP_ENET_MAC_ENABLED AND CONFIG_XTAL32K)
+	message(FATAL_ERROR "Ethernet and external 32K clock source are "
+		"mutually exclusive on FRDM_RW612 due to shared PCB nets "
+		"between the ethernet PHY and the external oscillator")
+endif()
 endif()
